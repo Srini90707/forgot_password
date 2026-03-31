@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password</title>
+  <style>
+    :root {
+      --white: #ffffff;
+      --navy: #0B1F3A;
+      --light-purple: #8A2BE2; /* Example light purple */
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: var(--white);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background-color: var(--white);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .icon {
+      font-size: 75px;
+      color: var(--light-purple);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 6px;
+      color: var(--navy);
+    }
+
+    p {
+      margin-bottom: 30px;
+      color: #555;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+
+    .input-container input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .input-container .icon-small {
+      margin-right: 10px;
+      color: var(--light-purple);
+      font-size: 20px;
+    }
+
+    .button {
+      background-color: var(--navy);
+      color: var(--white);
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .button:hover {
+      background-color: #091733;
+    }
+  </style>
+  <!-- Ionicons CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/6.0.4/css/ionicons.min.css" />
+</head>
+<body>
+
+  <div class="card">
+    <div class="icon">
+      <i class="icon ion-lock-closed-outline"></i>
+    </div>
+
+    <h1>Reset Password</h1>
+    <p>Enter your new password</p>
+
+    <div class="input-container">
+      <i class="icon-small ion-lock-closed-outline"></i>
+      <input type="password" id="password" placeholder="New Password">
+    </div>
+
+    <div class="input-container">
+      <i class="icon-small ion-lock-closed-outline"></i>
+      <input type="password" id="confirmPassword" placeholder="Confirm Password">
+    </div>
+
+    <button class="button" onclick="resetPassword()">Reset Password</button>
+  </div>
+
+  <script>
+    // Simulate token from URL params (e.g., ?token=abc123)
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (!token) {
+      alert('Invalid or expired link');
+      window.history.back();
+    }
+
+    async function resetPassword() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (!password || !confirmPassword) {
+        alert('Fill all fields');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://192.168.1.26:8000/api/reset-password/${token}/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ newPassword: password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert(data.message);
+          window.location.href = '/login.html'; // Redirect to login page
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        alert('Server error');
+      }
+    }
+  </script>
+</body>
+</html>
